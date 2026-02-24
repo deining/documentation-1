@@ -2,17 +2,12 @@
 Shapes
 ======
 
-Shapes are handy if you want to add personality to your website.
+Shapes are handy if you want to add personality to your website. In this chapter, you will learn
+how to add standard and custom background/image shapes.
 
-In this chapter, you will learn how to add standard and custom background and image shapes.
-
-.. _website_themes/shapes/bg:
-
-Background shapes
-=================
-
-Background shapes are SVG files that you can add as a decorative background in your different
-sections. Each shape has one or several customizable colors, and some of them are animated.
+They are SVG files that you can add as a decorative background in your different
+sections or directly on your images. Each shape has one or several customizable colors, and some of
+them are animated.
 
 .. warning::
     Odoo's default shapes use the Odoo default colors palette map as reference. This way, colors
@@ -28,6 +23,11 @@ sections. Each shape has one or several customizable colors, and some of them ar
             '5': '#383E45',
         }
 
+.. _website_themes/shapes/bg:
+
+Background shapes
+=================
+
 .. _website_themes/shapes/bg/standard:
 
 Standard
@@ -35,7 +35,10 @@ Standard
 
 A large selection of default background shapes is available.
 
-**Use**
+.. _website_themes/shapes/bg/standard/usage:
+
+Usage
+~~~~~
 
 .. code-block:: xml
 
@@ -176,17 +179,9 @@ Firstly, you need to create an SVG file for your shape.
        <polygon points="0 25, 43 0, 86 25, 86 75, 43 100, 0 75" style="fill: #3AADAA;"/>
    </svg>
 
-Make sure to use colors from the default Odoo palette for your shape (as explained :ref:`above <website_themes/shapes/bg>`).
+.. important::
+   Make sure to use colors from the default Odoo palette for your shape (as explained :ref:`above <website_themes/shapes/bg>`).
 
-.. code-block:: scss
-
-   default_palette = {
-       '1': '#3AADAA',
-       '2': '#7C6576',
-       '3': '#F6F6F6',
-       '4': '#FFFFFF',
-       '5': '#383E45',
-   }
 .. _website_themes/shapes/bg/custom/attachment:
 
 Attachment
@@ -309,3 +304,264 @@ In your XML pages, you can use your shape in the same way as the others.
 
 You can also redefine colors using the `data-oe-shape-data attribute`, but this is optional.
 
+.. _website_themes/shapes/img:
+
+Image shapes
+=================
+
+Image shapes are SVG files you can add as a clipping mask on your images. Some shapes have
+customizable colors, and some are animated.
+
+.. _website_themes/shapes/img/standard:
+
+Standard
+--------
+
+A large selection of default image shapes is available.
+
+**Use**
+
+A shape can only be applied on an image that has been previously declared in an `ir.attachment`
+record as the Website Builder needs to re-process the image. To summarize, the system injects the
+original image into a SVG file containing both the image and the shape.
+
+.. code-block:: xml
+   :emphasize-lines: 4-7
+
+   <img src="..."
+      class="img img-fluid mx-auto"
+      alt="..."
+      data-shape="html_builder/solid/solid_blob_2"
+      data-shape-colors="#714B67;;;;"
+      data-format-mimetype="image/svg+xml"
+      data-file-name="s_text_image.svg"
+   >
+
+.. list-table::
+   :header-rows: 1
+   :stub-columns: 1
+   :widths: 20 80
+
+   * - Attribute
+     - Description
+   * - data-shape
+     - Location of the shape
+   * - data-shape-colors
+     - Colors applied to the shape
+   * - data-format-mimetype
+     - Mimetype of the original image
+   * - data-file-name
+     - Name of the file which is created after a shape modification (Always use `. svg` extension as
+       the image shape is applied into a SVG file containing the shape and the original image).
+
+.. _website_themes/shapes/img/custom:
+
+Custom
+------
+
+The creation of a custom image shape is quite simple and relies on 2 steps:
+#. Create an SVG file with a specific structure
+#. Add the custom shape to the list
+
+.. _website_themes/shapes/img/custom/svg:
+
+Create the SVG
+~~~~~~~~~~~~~~
+
+Firstly, create an SVG file for your image shape.
+
+.. code-block:: xml
+   :caption: ``/website_airproof/static/image_shapes/duo/01.svg``
+
+   <svg xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      width="800"
+      height="800">
+      <defs>
+         <!-- Mask -->
+         <clipPath id="clip-path" clipPathUnits="objectBoundingBox">
+            <use xlink:href="#filterPath" fill="none" />
+         </clipPath>
+         <!-- Vector used in the mask definition (Clip-path) -->
+         <path id="filterPath" d="M0.325,0.75H0.125c-0.069,0-0.125-0.056-0.125-0.125V0.125C0,0.056,
+         0.056,0,0.125,0h0.2c0.069,0,0.125,0.056,0.125,0.125v0.5c0,0.069-0.056,0.125-0.125,0.125ZM1,
+         0.875v-0.5c0-0.069-0.056-0.125-0.125-0.125h-0.2c-0.069,0-0.125,0.056-0.125,0.125v0.5c0,
+         0.069,0.056,0.125,0.125,0.125h0.2c0.069,0,0.125-0.056,0.125-0.125Z"/>
+      </defs>
+
+      <!-- Other decorative element around (not used as a mask) -->
+      <svg viewBox="0 0 1 1" preserveAspectRatio="none">
+         <rect x="0.494"
+            y="0.325"
+            width="0.0125"
+            height="0.35"
+            rx="0.00625"
+            ry="0.00625"
+            fill="#7C6576" />
+      </svg>
+
+      <!-- Preview of the Path declared in the <defs> -->
+      <svg viewBox="0 0 1 1" id="preview" preserveAspectRatio="none">
+         <use xlink:href="#filterPath" fill="darkgrey"/>
+      </svg>
+
+      <!-- Future image that on wich the mask is applied -->
+      <image xlink:href="" clip-path="url(#clip-path)">
+         <!-- Compatibility hack (Safari, Firefox) for non-animated shapes -->
+         <animateMotion dur="1ms" repeatCount="indefinite"/>
+      </image>
+   </svg>
+
+The SVG file can be created in any vector editing software but requires some adaptations to work
+properly with the Website Builder. Let's break down the example above.
+
+**Main SVG**
+
+The Image Shape is wrapped into a single main SVG object with explicit `width` and `height` attributes
+in pixels:
+
+.. code-block:: xml
+   :emphasize-lines: 4-5
+
+   <svg xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   width="800"
+   height="800">
+      ...
+   </svg>
+
+**Mask**
+
+The mask is defined into a `<defs>` tag in order to be reusable (even if it's not). It's compound
+by 2 elements : a `clip-path` and a vector (a `path` in our shape).At this step, what's set into
+`defs` does not appear.
+
+.. code-block:: xml
+
+   <defs>
+      <!-- Mask -->
+      <clipPath id="clip-path" clipPathUnits="objectBoundingBox">
+         <use xlink:href="#filterPath" fill="none" />
+      </clipPath>
+      <!-- Vector used in the mask definition (Clip-path) -->
+      <path id="filterPath" d="M0.325,0.75H0.125c-0.069,0-0.125-0.056-0.125-0.125V0.125C0,0.056,
+      0.056,0,0.125,0h0.2c0.069,0,0.125,0.056,0.125,0.125v0.5c0,0.069-0.056,0.125-0.125,0.125ZM1,
+      0.875v-0.5c0-0.069-0.056-0.125-0.125-0.125h-0.2c-0.069,0-0.125,0.056-0.125,0.125v0.5c0,
+      0.069,0.056,0.125,0.125,0.125h0.2c0.069,0,0.125-0.056,0.125-0.125Z"/>
+   </defs>
+
+**Additional decorations**
+
+If the shape contains any other decorative element, they are set into the main SVG but outside the
+`defs`
+
+.. code-block:: xml
+
+   <svg viewBox="0 0 1 1" preserveAspectRatio="none">
+      <rect x="0.494"
+         y="0.325"
+         width="0.0125"
+         height="0.35"
+         rx="0.00625"
+         ry="0.00625"
+         fill="#7C6576" />
+   </svg>
+
+This decoration has a `fill` color that can be edited with the Website Builder:
+
+.. image:: shapes/img-shape-colors.png
+   :alt: Color edition
+
+.. important::
+
+   Do not forget to use a color coming from the Odoo default colors palette to make it editable by
+   the Website Builder (as explained :ref:`above <website_themes/shapes/bg>`).
+
+**Preview**
+
+Then render the mask in a "preview" by using a reference to the `ìd` set before (`filterPath`):
+
+.. code-block:: xml
+
+   <svg viewBox="0 0 1 1" id="preview" preserveAspectRatio="none">
+      <use xlink:href="#filterPath" fill="darkgrey"/>
+   </svg>
+
+**Image**
+
+Finally, add an `image` tag with a `clip-path` reference. It will receive your future image.
+
+.. code-block:: xml
+
+   <image xlink:href="" clip-path="url(#clip-path)">
+      <!-- Compatibility hack (Safari, Firefox) for non-animated shapes -->
+      <animateMotion dur="1ms" repeatCount="indefinite"/>
+   </image>
+
+.. _website_themes/shapes/img/custom/option:
+
+Add it to the list
+~~~~~~~~~~~~~~~~~~
+
+Finally, add the custom shape to the list:
+
+.. code-block:: javascript
+   :caption: ``/website_airproof/static/src/website_builder/image_shapes.js``
+
+   import { Plugin } from "@html_editor/plugin";
+   import { _t } from "@web/core/l10n/translation";
+   import { registry } from "@web/core/registry";
+   export class AirproofImageShapesPlugin extends Plugin {
+      static id = "airproofImageShapes";
+      resources = {
+         image_shape_groups_providers: () => ({
+            airproof: {
+               label: _t("Airproof"),
+               subgroups: {
+                  airproof_duo: {
+                     label: _t("Duo"),
+                     shapes: {
+                        "website_airproof/duo/01": {
+                           selectLabel: _t("Airproof 01"),
+                           transform: true,
+                           togglableRatio: true,
+                        },
+                     },
+                  },
+               },
+            },
+         }),
+      };
+   }
+
+   registry.category("website-plugins").add(AirproofImageShapesPlugin.id, AirproofImageShapesPlugin);
+
+.. list-table::
+   :header-rows: 1
+   :stub-columns: 1
+   :widths: 20 80
+
+   * - Property
+     - Description
+   * - selectLabel
+     - Name of the shape displayed in the list
+   * - transform
+     - Show/hide the transformation option (vertical and horizontal mirror, left and right rotation).
+   * - toggleRatio
+     - Show/hide the stretch option.
+   * - animated
+     - Indicates if the shape contains some animations
+   * - imgSize
+     - Set the image ratio used for :guilabel:`Devices` (example: `0.36:1`)
+
+.. figure:: shapes/img-shape-transform-ratio.png
+   :alt: Transform and Stretch options
+
+   Transform and Stretch options
+
+.. _website_themes/shapes/img/custom/use:
+
+Use it into your pages
+~~~~~~~~~~~~~~~~~~~~~~
+
+Use the custom shape
