@@ -46,7 +46,7 @@ Menu item
        <field name="name">About us</field>
        <field name="url">/about-us</field>
        <field name="parent_id" search="[
-           ('url', '=', '/default-main-menu'),
+           ('url', '=', '#'),
            ('website_id', '=', 1)]"/>
        <field name="website_id">1</field>
        <field name="sequence" type="int">10</field>
@@ -123,7 +123,7 @@ Dropdown menu
        <field name="name">Services</field>
        <field name="website_id">1</field>
        <field name="parent_id" search="[
-           ('url', '=', '/default-main-menu'),
+           ('url', '=', '#'),
            ('website_id', '=', 1)]"/>
        <field name="sequence" type="int">...</field>
    </record>
@@ -169,7 +169,7 @@ can re-use the template structure in the `mega_menu_content` field like any stat
     <record id="menu_mega_menu" model="website.menu">
         <field name="name">Mega Menu</field>
         <field name="parent_id" search="[
-            ('url', '=', '/default-main-menu'),
+            ('url', '=', '#'),
             ('website_id', '=', 1)]"/>
         <field name="website_id">1</field>
         <field name="sequence" type="int">..</field>
@@ -258,14 +258,20 @@ Create your own template and add it to the list.
 Use the following code to add an option for your new custom mega menu on the Website Builder.
 
 .. code-block:: xml
-   :caption: ``/website_airproof/views/snippets/options.xml``
+   :caption: ``/website_airproof/static/src/website_builder/mega_menu_option.xml``
 
-   <template id="snippet_options" inherit_id="website.snippet_options" name="Airproof - Mega Menu Options">
-       <xpath expr="//*[@data-name='mega_menu_template_opt']/*" position="before">
-           <t t-set="_label">Airproof</t>
-           <we-button t-att-data-select-label="_label"
-               data-select-template="website_airproof.s_mega_menu_airproof"
-               data-img="/website_airproof/static/src/img/builder/header_opt.svg"
-               t-out="_label"/>
-       </xpath>
-   </template>
+   <?xml version="1.0" encoding="UTF-8" ?>
+   <templates xml:space="preserve">
+      <t t-name="website_airproof.MegaMenuOption" t-inherit="website.MegaMenuOption" t-inherit-mode="extension">
+         <xpath expr="//BuilderSelect[@id=&quot;'mega_menu_template_opt'&quot;]" position="inside">
+            <BuilderSelectItem
+               title.translate="Airproof"
+               actionParam="{
+                  view: `website_airproof.s_mega_menu_airproof`,
+                  templateClass: 's_mega_menu_airproof',
+               }">
+               <Img class="'w-75 mx-auto my-3'" src="'/website_airproof/static/src/img/wbuilder/template-header-opt.svg'" />
+            </BuilderSelectItem>
+         </xpath>
+      </t>
+   </templates>
